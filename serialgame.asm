@@ -5,8 +5,8 @@
 	.org    23h
 	
 	JNB RI, ISR_end 	; source is incoming? if not go directly to end
-	clr	RI		; clear RI.
-	mov	A, SBUF		;get char in buffer.
+	clr	RI				; clear RI.
+	mov	A, SBUF			;get char in buffer.
 	;acall _TX_CHAR		;send character
     acall MOVE_UP
 ISR_end:
