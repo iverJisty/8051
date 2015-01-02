@@ -110,15 +110,15 @@ str_end:
 ; send the content of the ACC as character over the serial bus...
 _TX_CHAR:
 	jnb	TI,_TX_CHAR	;if TI = 0,wait for send finish.
-	clr	TI		;clear TI.
+	clr	TI			;clear TI.
 	mov	SBUF, A		;send char	
 	ret
 
 ;receive a character
 _RX_CHAR: 
 	JNB	RI,_RX_CHAR	;if RI = 0,wait for receive to finish..
-	clr	RI		;clear RI.
-	mov	A, SBUF	;get char in buffer.
+	clr	RI			;clear RI.
+	mov	A, SBUF		;get char in buffer.
 	ret
 
 ; send the beginning of a ANSI escape sequence (ESC+[) 
@@ -134,7 +134,7 @@ MOVE_UP:
     push ACC
     push B
     ;acall PUSH_UP
-    ; merge
+    ; compact
    
     mov A,#24
     mov DPTR,#0x30
@@ -153,7 +153,7 @@ MOVE_UP:
     movx @DPTR,A
     
     mov R0,#0x30     
-    mov A,#12        ;loop 12 times
+    mov A,#12        ;repeat 12 times
 
 LOOP_UP:
     dec A
@@ -164,20 +164,21 @@ LOOP_UP:
     mov DPH,#0          ;must clear DPH
     movx A,@DPTR
     JZ PASS_UP          ;if A == 0 then pass
-    mov R1,A            ;R1 = A
+    mov R1,A            ;R1 <-- A
 
     mov A,DPL
     add A,#4
     mov DPL,A
     mov DPH,#0
     movx A,@DPTR        ;A+4
-    CJNE A,01H,PASS_UP
+
+    CJNE A,01H,PASS_UP  ;not equal ==> jmp
     ; add
     mov DPL,R0
     mov DPH,#0
     movx A,@DPTR
     inc A
-    mov DPH,#0
+	mov DPH,#0
     movx @DPTR,A
     ;clear A+4
     mov A,DPL
@@ -213,10 +214,10 @@ PASS_UP:
 
 DETECT_ARROW:
     push ACC
-    anl A,#0x9B     ; Down
+    anl A,#0x9B		; Down
     jnz NOT_DOWN
 
-    ;mov A,#'D'      ;DO SOMETHING
+    ;mov A,#'D'		;DO SOMETHING
     ;acall _TX_CHAR
     pop ACC
     sjmp DISPLAY 
@@ -263,7 +264,7 @@ DISPLAY:
 	push ACC
 
 	; move back cursor
-	mov A,#10       ; demo for positioning the cursor
+	mov A,#10				; demo for positioning the cursor
 	mov B,#10
 	acall _CSI_POS
 	; prompt
@@ -334,17 +335,17 @@ print33:
 	subb A, 33
 	jz printDot33
 
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
     mov A,33
     acall _SEND_DEZ_NUM
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
 	sjmp print34
 printDot33:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot		; send string 
 	acall   _TX_STR
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
 
 print34:
@@ -394,15 +395,15 @@ print37:
 	subb A, 37
 	jz printDot37
     
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
 	mov A,37
     acall _SEND_DEZ_NUM
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
 	sjmp print38
 printDot37:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot		; send string 
 	acall   _TX_STR
 
 print38:
@@ -410,15 +411,15 @@ print38:
 	subb A, 38
 	jz printDot38
 
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
     mov A,38
     acall _SEND_DEZ_NUM
 	sjmp print39
 printDot38:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot	    ; send string 
 	acall   _TX_STR
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine  ; send string 
 	acall   _TX_STR
 
 print39:
@@ -426,13 +427,13 @@ print39:
 	subb A, 39
 	jz printDot39
 
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
     mov A,39
     acall _SEND_DEZ_NUM
 	sjmp print3A
 printDot39:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot		; send string 
 	acall   _TX_STR
 
 print3A:
@@ -454,15 +455,15 @@ print3B:
 	subb A, 3Bh
 	jz printDot3B
     
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
 	mov A,3Bh
     acall _SEND_DEZ_NUM
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
 	sjmp print3C
 printDot3B:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot		; send string 
 	acall   _TX_STR
 
 print3C:
@@ -470,15 +471,15 @@ print3C:
 	subb A, 3Ch
 	jz printDot3C
 
-   	mov   	dptr, #Tab    ; send string 
+   	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
     mov A,3Ch
     acall _SEND_DEZ_NUM
 	sjmp print3D
 printDot3C:
-   	mov   	dptr, #Dot    ; send string 
+   	mov   	dptr, #Dot		; send string 
 	acall   _TX_STR
-   	mov   	dptr, #newLine    ; send string 
+   	mov   	dptr, #newLine  ; send string 
 	acall   _TX_STR
 
 print3D:
@@ -541,11 +542,11 @@ Tab:
 	.DB 00H
 
 STR_1: 
-	.DB "Serial Game\r\n\n\n\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n"
+	.DB "Serial Port Game\r\n\n\n\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n\t.\t.\t.\t.\r\n"
 	.DB 00H
 
 STR_2:
-	.DB "Serial Game\r\n\r\n"
+	.DB "Serial Port Game\r\n\r\n"
 	.DB 00H
 
 NUMBER_STR:
