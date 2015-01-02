@@ -1,12 +1,10 @@
 	.org    0x0000
 	ajmp    start_main
 
-
 ; serial bus interrupt service routine (echos characters)
 	.org    23h
 	
 	JNB RI, ISR_end 	; source is incoming? if not go directly to end
-
 	clr	RI		; clear RI.
 	mov	A, SBUF		;get char in buffer.
 	;acall _TX_CHAR		;send character
@@ -31,9 +29,8 @@ start_main:
     mov A, #31              ; 30-39 set color 
     acall _CSI_M
  
-;   	mov   	dptr, #STR_1    ; send string 
+;  	mov   	dptr, #STR_1    ; send string 
 ;	acall   _TX_STR
-
 
 ; prepare the LED output
 	mov	A, #20
@@ -47,16 +44,15 @@ start_main:
 	mov	A, #0x1
 	movx	@DPTR, A
 
-
 ; inside the main threat we let the LED light move
 loop_end:
-		mov	A, #1
+	mov	A, #1
 	acall	_DELAY
 
 	mov	DPTR, #0xA000
 	movx	A, @DPTR
 	rl	A
-       	movx	@DPTR, A
+   	movx	@DPTR, A
 
 	ajmp loop_end
 
@@ -65,11 +61,11 @@ loop_end:
 _CSI_M:                 
 	push ACC
 	acall _TX_CSI
-        pop ACC
+    pop ACC
 	acall _SEND_DEZ_NUM
 	mov A,#'m'
 	acall _TX_CHAR
-      	ret
+   	ret
 
  ; positions the cursor on a position indicated by the A and B registers
 _CSI_POS:                    
@@ -98,16 +94,14 @@ _SEND_DEZ_NUM:
 	acall _TX_CHAR
 	ret
 
-
-
 ; send a constant string over the serial bus, the starting pointer has to be stored in the dptr register
 _TX_STR:
-     	mov 	R4, #0
+   	mov 	R4, #0
 loop_str:
 	mov	A,R4
 	movc	A, @A+DPTR	
 	inc R4
-        jz 	str_end
+    jz 	str_end
 	acall _TX_CHAR
 	ajmp loop_str
 str_end:
@@ -116,7 +110,6 @@ str_end:
 ; send the content of the ACC as character over the serial bus...
 _TX_CHAR:
 	jnb	TI,_TX_CHAR	;if TI = 0,wait for send finish.
-
 	clr	TI		;clear TI.
 	mov	SBUF, A		;send char	
 	ret
@@ -124,7 +117,6 @@ _TX_CHAR:
 ;receive a character
 _RX_CHAR: 
 	JNB	RI,_RX_CHAR	;if RI = 0,wait for receive to finish..
-
 	clr	RI		;clear RI.
 	mov	A, SBUF	;get char in buffer.
 	ret
@@ -135,7 +127,7 @@ _TX_CSI:
 	acall _TX_CHAR
 	mov A, #'['
 	acall _TX_CHAR
-        ret
+    ret
 ; text strings
 
 MOVE_UP:
@@ -173,6 +165,7 @@ LOOP_UP:
     movx A,@DPTR
     JZ PASS_UP          ;if A == 0 then pass
     mov R1,A            ;R1 = A
+
     mov A,DPL
     add A,#4
     mov DPL,A
@@ -205,6 +198,7 @@ PASS_UP:
     mov DPH,#0
     movx A,@DPTR
     acall _SEND_DEZ_NUM
+
     mov DPL,#0x31
     mov DPH,#0
     movx A,@DPTR
@@ -216,12 +210,6 @@ PASS_UP:
     pop ACC
     ret
 
-MO:
-;    push ACC
-;    mov 30, #0x30
-;    mov A,30
-;    acall _SEND_DEZ_NUM
-;	pop ACC 
 
 DETECT_ARROW:
     push ACC
@@ -540,8 +528,6 @@ endPrint:
 	pop ACC
     
 
-
-
 newLine:
 	.DB "\r\n"
 	.DB 00H
@@ -559,11 +545,12 @@ STR_1:
 	.DB 00H
 
 STR_2:
-	.DB "Serial Game\r\n\t1337\r\n"
+	.DB "Serial Game\r\n\r\n"
 	.DB 00H
 
 NUMBER_STR:
 	.DB "0123456789ABCDEF"
+
 
 _DELAY:
 	mov R0, A
@@ -575,6 +562,4 @@ _DELAY_K:
 	djnz R2, _DELAY_K	;if(--R2 != 0) goto DELAY_K
 	djnz R1, _DELAY_J	;if(--R1 != 0) goto DELAY_J
 	djnz R0, _DELAY_I	;if(--R0 != 0) goto DELAY_I
-
 	ret
-
