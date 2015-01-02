@@ -1,3 +1,3 @@
 #### 8051 Project
 
-Serial Game
+Serial Port Game
