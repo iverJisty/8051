@@ -5,25 +5,27 @@
 NUM_2048:
     .DB "   2"
     .DB 00H
-    .DB "   4"
+    .DB "   4"  ;5
     .DB 00H
-    .DB "   8"
+    .DB "   8"  ;10
     .DB 00H
-    .DB "  16"
+    .DB "  16"  ;15
     .DB 00H
-    .DB "  32"
+    .DB "  32"  ;20
     .DB 00H
-    .DB "  64"
+    .DB "  64"  ;25
     .DB 00H
-    .DB " 128"
+    .DB " 128"  ;30
     .DB 00H
-    .DB " 256"
+    .DB " 256"  ;35
     .DB 00H
-    .DB " 512"
+    .DB " 512"  ;40
     .DB 00H
-    .DB "1024"
+    .DB "1024"  ;45
     .DB 00H
-    .DB "2048"
+    .DB "2048"  ;50
+    .DB 00H
+    .DB "4096"  ;55
     .DB 00H
 
 ; serial bus interrupt service routine (echos characters)
@@ -54,6 +56,7 @@ start_main:
     mov A, #31              ; 30-39 set color 
     acall _CSI_M
  
+    acall DISPLAY
   	;mov   	dptr, #NUM_2048    ; send string 
 	;acall   _TX_STR
 
@@ -229,14 +232,14 @@ PASS_UP:
 ;    mov DPH,#0
 ;    movx A,@DPTR
 ;    acall _SEND_DEZ_NUM
-
-    mov DPTR,#NUM_2048
-    mov A,#10           ;add 5 at a time
-    add A,DPL
-    mov DPL,A
-    mov DPH,#0
-
-    acall _TX_STR
+;
+;    mov DPTR,#NUM_2048
+;    mov A,#40           ;add 5 at a time
+;    add A,DPL
+;    mov DPL,A
+;    mov DPH,#0
+;
+;    acall _TX_STR
     ;acall PUSH_UP
     ;acall IF_DIE 
     pop B
@@ -291,6 +294,33 @@ NOT_RIGHT:
     pop ACC
     sjmp DISPLAY 
 
+PRINT_NUMBER:
+
+    mov DPL,A
+    mov DPH,#0
+    movx A, @DPTR
+    mov R3,A
+    mov A,#0
+    push ACC
+
+FIND_TABLE:
+    dec R3
+    pop ACC
+    add A,#5
+    push ACC
+    mov A,R3
+
+    jnz FIND_TABLE    
+    pop ACC
+    subb A,#5       ; so we get the offset of NUM_2048 to display
+
+    mov DPTR,#NUM_2048
+    add A,DPL
+    mov DPL,A
+    mov DPH,#0
+    acall _TX_STR
+    
+    ret
 
 DISPLAY:
 	push ACC
@@ -302,75 +332,176 @@ DISPLAY:
 	; prompt
    	mov   	dptr, #STR_2    ; send string 
 	acall   _TX_STR
-	
-	mov 30, #1
-	mov 31, #2
-	mov 32, #3
-	mov 33, #4
-	mov 34, #5
-	mov 35, #6
-	mov 36, #7
-	mov 37, #8
-	mov 38, #9
-	mov 39, #10
-	mov 3Ah, #11
-	mov 3Bh, #12
-	mov 3Ch, #13
-	mov 3Dh, #14
-	mov 3Eh, #15
-	mov 3Fh, #16
+
+    mov A,#30
+    mov DPL,A
+    mov DPH,#0
+    mov A,#1   
+    movx @DPTR,A
+
+    mov A,#31
+    mov DPL,A
+    mov DPH,#0
+    mov A,#2   
+    movx @DPTR,A
+
+    mov A,#32
+    mov DPL,A
+    mov DPH,#0
+    mov A,#3
+    movx @DPTR,A
+
+    mov A,#33
+    mov DPL,A
+    mov DPH,#0
+    mov A,#4 
+    movx @DPTR,A
+
+    mov A,#34
+    mov DPL,A
+    mov DPH,#0
+    mov A,#5   
+    movx @DPTR,A
+
+    mov A,#35
+    mov DPL,A
+    mov DPH,#0
+    mov A,#6   
+    movx @DPTR,A
+
+    mov A,#36
+    mov DPL,A
+    mov DPH,#0
+    mov A,#7   
+    movx @DPTR,A
+
+    mov A,#37
+    mov DPL,A
+    mov DPH,#0
+    mov A,#8  
+    movx @DPTR,A
+
+    mov A,#38
+    mov DPL,A
+    mov DPH,#0
+    mov A,#9   
+    movx @DPTR,A
+
+    mov A,#39
+    mov DPL,A
+    mov DPH,#0
+    mov A,#10
+    movx @DPTR,A
+
+    mov A,#3Ah
+    mov DPL,A
+    mov DPH,#0
+    mov A,#11   
+    movx @DPTR,A
+
+    mov A,#3Bh
+    mov DPL,A
+    mov DPH,#0
+    mov A,#12  
+    movx @DPTR,A
+
+    mov A,#3Ch
+    mov DPL,A
+    mov DPH,#0
+    mov A,#11   
+    movx @DPTR,A
+
+    mov A,#3Dh
+    mov DPL,A
+    mov DPH,#0
+    mov A,#10
+    movx @DPTR,A
+
+    mov A,#3Eh
+    mov DPL,A
+    mov DPH,#0
+    mov A,#9   
+    movx @DPTR,A
+
+    mov A,#3Fh
+    mov DPL,A
+    mov DPH,#0
+    mov A,#8   
+    movx @DPTR,A
+
+	;mov 30, #1
+	;mov 31, #2
+	;mov 32, #3
+	;mov 33, #4
+	;mov 34, #5
+	;mov 35, #6
+	;mov 36, #7
+	;mov 37, #8
+	;mov 38, #9
+	;mov 39, #10
+	;mov 3Ah, #11
+	;mov 3Bh, #12
+	;mov 3Ch, #13
+	;mov 3Dh, #14
+	;mov 3Eh, #15
+	;mov 3Fh, #16
+
 	
 print30:
-	mov A, #0x0
-	subb A, 30
+    mov DPL,#30
+    mov DPH,#0
+	movx A,@DPTR
 	jz printDot30
 
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-    mov A,30
-    acall _SEND_DEZ_NUM
+    mov A,#30
+    acall PRINT_NUMBER 
 	sjmp print31
 printDot30:
    	mov   	dptr, #Dot    ; send string 
 	acall   _TX_STR
 
 print31:
-	mov A, #0x0
-	subb A, 31
+    mov DPL,#31
+    mov DPH,#0
+	movx A,@DPTR
 	jz printDot31
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,31
-    acall _SEND_DEZ_NUM
+	mov A,#31
+    acall PRINT_NUMBER
 	sjmp print32
 printDot31:
    	mov   	dptr, #Dot    ; send string 
 	acall   _TX_STR
 
 print32:
-	mov A, #0x0
-	subb A, 32
+    mov DPL,#32
+    mov DPH,#0
+	movx A,@DPTR
 	jz printDot32
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,32
-    acall _SEND_DEZ_NUM
+	mov A,#32
+    acall PRINT_NUMBER
 	sjmp print33
 printDot32:
    	mov   	dptr, #Dot    ; send string 
 	acall   _TX_STR
 
 print33:
-	mov A, #0x0
-	subb A, 33
+    mov DPL,#33
+    mov DPH,#0
+	movx A,@DPTR
 	jz printDot33
 
    	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
-    mov A,33
-    acall _SEND_DEZ_NUM
+    mov A,#33
+    acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
 	sjmp print34
