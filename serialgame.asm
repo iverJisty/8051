@@ -36,6 +36,21 @@ NUM_2048:
 	mov	A, SBUF			;get char in buffer.
 	;acall _TX_CHAR		;send character
     acall DETECT_ARROW
+
+   ; mov A,#100
+   ; acall _DELAY 
+   ; mov A,#34
+   ; mov DPL,A
+   ; mov DPH,#0
+   ; mov A,#0   
+   ; movx @DPTR,A
+
+   ; mov A,#35
+   ; mov DPL,A
+   ; mov DPH,#0
+   ; mov A,#0   
+   ; movx @DPTR,A
+   ; acall DISPLAY
 ISR_end:
 	reti
 
@@ -50,7 +65,7 @@ start_main:
 
     mov IE, #0x90	;enable serial interrupt
 	mov A,#10       ; demo for positioning the cursor
-	mov B,#10
+	;mov B,#10
 	acall _CSI_POS
  
     mov A, #31              ; 30-39 set color 
@@ -108,13 +123,13 @@ start_main:
     mov A,#38
     mov DPL,A
     mov DPH,#0
-    mov A,#0   
+    mov A,#3   
     movx @DPTR,A
 
     mov A,#39
     mov DPL,A
     mov DPH,#0
-    mov A,#0
+    mov A,#7
     movx @DPTR,A
 
     mov A,#3Ah
@@ -132,7 +147,7 @@ start_main:
     mov A,#3Ch
     mov DPL,A
     mov DPH,#0
-    mov A,#0   
+    mov A,#3   
     movx @DPTR,A
 
     mov A,#3Dh
@@ -154,7 +169,7 @@ start_main:
     movx @DPTR,A
 
 
-    ;acall DISPLAY
+    acall DISPLAY
   	;mov   	dptr, #NUM_2048    ; send string 
 	;acall   _TX_STR
 
@@ -271,7 +286,7 @@ PUSH_UP:
         mov DPL,#30
         mov DPH,#0
         movx @DPTR,A    ;34 -> 30
-        mov DPL,#34h
+        mov DPL,#34
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 34
@@ -291,7 +306,7 @@ UP_CHECK_31:
         mov DPL,#31
         mov DPH,#0
         movx @DPTR,A    ;35 -> 31
-        mov DPL,#35h
+        mov DPL,#35
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 35
@@ -311,7 +326,7 @@ UP_CHECK_32:
         mov DPL,#32
         mov DPH,#0
         movx @DPTR,A    ;36 -> 32
-        mov DPL,#36h
+        mov DPL,#36
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 36
@@ -331,7 +346,7 @@ UP_CHECK_33:
         mov DPL,#33
         mov DPH,#0
         movx @DPTR,A    ;37 -> 33
-        mov DPL,#37h
+        mov DPL,#37
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 37
@@ -351,7 +366,7 @@ UP_CHECK_34:
         mov DPL,#34
         mov DPH,#0
         movx @DPTR,A    ;38 -> 34
-        mov DPL,#38h
+        mov DPL,#38
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 38
@@ -371,14 +386,14 @@ UP_CHECK_35:
         mov DPL,#35
         mov DPH,#0
         movx @DPTR,A    ;39 -> 35
-        mov DPL,#39h
+        mov DPL,#39
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 39
 
 UP_CHECK_36:
     ; 36
-    mov DPL,#36h
+    mov DPL,#36
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_37
@@ -388,7 +403,7 @@ UP_CHECK_36:
     movx A,@DPTR
     jz UP_CHECK_37
 
-        mov DPL,#36h
+        mov DPL,#36
         mov DPH,#0
         movx @DPTR,A    ;3A -> 36
         mov DPL,#3Ah
@@ -398,7 +413,7 @@ UP_CHECK_36:
 
 UP_CHECK_37:
     ; 37
-    mov DPL,#37h
+    mov DPL,#37
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_38
@@ -408,7 +423,7 @@ UP_CHECK_37:
     movx A,@DPTR
     jz UP_CHECK_38
 
-        mov DPL,#37h
+        mov DPL,#37
         mov DPH,#0
         movx @DPTR,A    ;3B -> 37
         mov DPL,#3Bh
@@ -418,7 +433,7 @@ UP_CHECK_37:
 
 UP_CHECK_38:
     ; 38
-    mov DPL,#38h
+    mov DPL,#38
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_39
@@ -428,7 +443,7 @@ UP_CHECK_38:
     movx A,@DPTR
     jz UP_CHECK_39
 
-        mov DPL,#38h
+        mov DPL,#38
         mov DPH,#0
         movx @DPTR,A    ;3C -> 38
         mov DPL,#3Ch
@@ -438,7 +453,7 @@ UP_CHECK_38:
         
 UP_CHECK_39:
     ; 39
-    mov DPL,#39h
+    mov DPL,#39
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_3A
@@ -448,7 +463,7 @@ UP_CHECK_39:
     movx A,@DPTR
     jz UP_CHECK_3A
 
-        mov DPL,#39h
+        mov DPL,#39
         mov DPH,#0
         movx @DPTR,A    ;3D -> 39
         mov DPL,#3Dh
@@ -505,7 +520,7 @@ MOVE_UP:
     acall PUSH_UP    ;compact
    
     ;merge
-    mov R0,#0x30     
+    mov R0,#30h     
     mov A,#12        ;repeat 12 times
 
 LOOP_UP:
@@ -580,7 +595,8 @@ DETECT_ARROW:
     ;mov A,#'D'		;DO SOMETHING
     ;acall _TX_CHAR
     pop ACC
-    sjmp DISPLAY 
+    acall DISPLAY 
+    ret
 
 NOT_DOWN:
     pop ACC
@@ -592,7 +608,8 @@ NOT_DOWN:
     ;acall _TX_CHAR
     acall MOVE_UP
     pop ACC
-    sjmp DISPLAY 
+    acall DISPLAY 
+    ret
 
 NOT_UP:
     pop ACC
@@ -603,7 +620,8 @@ NOT_UP:
     mov A,#'L'
     acall _TX_CHAR
     pop ACC
-    sjmp DISPLAY 
+    acall DISPLAY 
+    ret
     
 NOT_LEFT:
     pop ACC
@@ -614,11 +632,13 @@ NOT_LEFT:
     mov A,#'R'
     acall _TX_CHAR
     pop ACC
-    sjmp DISPLAY 
+    acall DISPLAY 
+    ret
 
 NOT_RIGHT:
     pop ACC
-    sjmp DISPLAY 
+    acall DISPLAY 
+    ret
 
 PRINT_NUMBER:
 
@@ -652,9 +672,9 @@ DISPLAY:
 	push ACC
 
 	; move back cursor
-	mov A,#10				; demo for positioning the cursor
-	mov B,#10
-	acall _CSI_POS
+	;mov A,#10				; demo for positioning the cursor
+	;mov B,#10
+	;acall _CSI_POS
 	; prompt
    	mov   	dptr, #STR_2    ; send string 
 	acall   _TX_STR
@@ -916,6 +936,8 @@ printDot3F:
 	acall   _TX_STR
 
 endPrint:
+    mov     dptr, #CLR_SCREEN
+    acall   _TX_STR
 	pop ACC
     ret    
 
@@ -942,8 +964,9 @@ STR_2:
 NUMBER_STR:
 	.DB "0123456789ABCDEF"
 
-
-
+CLR_SCREEN:
+    .DB "\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+    .DB 00H
 
 _DELAY:
 	mov R0, A
