@@ -1,6 +1,31 @@
 	.org    0x0000
 	ajmp    start_main
 
+    .org    50h
+NUM_2048:
+    .DB "   2"
+    .DB 00H
+    .DB "   4"
+    .DB 00H
+    .DB "   8"
+    .DB 00H
+    .DB "  16"
+    .DB 00H
+    .DB "  32"
+    .DB 00H
+    .DB "  64"
+    .DB 00H
+    .DB " 128"
+    .DB 00H
+    .DB " 256"
+    .DB 00H
+    .DB " 512"
+    .DB 00H
+    .DB "1024"
+    .DB 00H
+    .DB "2048"
+    .DB 00H
+
 ; serial bus interrupt service routine (echos characters)
 	.org    23h
 	
@@ -29,8 +54,8 @@ start_main:
     mov A, #31              ; 30-39 set color 
     acall _CSI_M
  
-;  	mov   	dptr, #STR_1    ; send string 
-;	acall   _TX_STR
+  	;mov   	dptr, #NUM_2048    ; send string 
+	;acall   _TX_STR
 
 ; prepare the LED output
 	mov	A, #20
@@ -136,7 +161,7 @@ MOVE_UP:
     ;acall PUSH_UP
     ; compact
    
-    mov A,#24
+    mov A,#1
     mov DPTR,#0x30
     movx @DPTR,A
 
@@ -195,16 +220,23 @@ PASS_UP:
     pop ACC
     jnz LOOP_UP 
 
-    mov DPL,#0x30
-    mov DPH,#0
-    movx A,@DPTR
-    acall _SEND_DEZ_NUM
+;    mov DPL,#0x30
+;    mov DPH,#0
+;    movx A,@DPTR
+;    acall _SEND_DEZ_NUM
+;
+;    mov DPL,#0x31
+;    mov DPH,#0
+;    movx A,@DPTR
+;    acall _SEND_DEZ_NUM
 
-    mov DPL,#0x31
+    mov DPTR,#NUM_2048
+    mov A,#10           ;add 5 at a time
+    add A,DPL
+    mov DPL,A
     mov DPH,#0
-    movx A,@DPTR
-    acall _SEND_DEZ_NUM
 
+    acall _TX_STR
     ;acall PUSH_UP
     ;acall IF_DIE 
     pop B
@@ -551,6 +583,8 @@ STR_2:
 
 NUMBER_STR:
 	.DB "0123456789ABCDEF"
+
+
 
 
 _DELAY:
