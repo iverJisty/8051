@@ -107,13 +107,13 @@ INIT:
     mov A,#35h
     mov DPL,A
     mov DPH,#0
-    mov A,#6   
+    mov A,#5
     movx @DPTR,A
 
     mov A,#36h
     mov DPL,A
     mov DPH,#0
-    mov A,#11 
+    mov A,#8 
     movx @DPTR,A
 
     mov A,#37h
@@ -131,7 +131,7 @@ INIT:
     mov A,#39h
     mov DPL,A
     mov DPH,#0
-    mov A,#7
+    mov A,#5
     movx @DPTR,A
 
     mov A,#3Ah
@@ -858,15 +858,40 @@ LOOP_DOWN:
     movx A,@DPTR
     JZ PASS_DOWN          ;if A == 0 then pass
 
+    ;clr PSW.4
+    ;clr PSW.3
     mov R1,A            ;R1 <-- A
     mov A,DPL
+    clr PSW.7
     subb A,#4
     mov DPL,A
     mov DPH,#0
     movx A,@DPTR        ;A-4
+    
+    ;test
+    ;mov R5,A
+    ;mov A,R1
+    ;lcall _SEND_DEZ_NUM
+    ;mov A,R5
+    ;lcall _SEND_DEZ_NUM
+    
 
-    CJNE A,01H,PASS_DOWN  ;A is not equal to R1 ==> jmp
+    ;CJNE A,01H,PASS_DOWN  ;A is not equal to R1 ==> jmp
+    clr PSW.7
+    subb A,R1
+
+    ;mov R5,A
+    ;mov A,R1
+    ;lcall _SEND_DEZ_NUM
+    ;mov A,R5
+    ;lcall _SEND_DEZ_NUM
+   
+    ;lcall _SEND_DEZ_NUM
+    ;mov DPTR,#newLine
+    ;lcall _TX_STR
+    jnz PASS_DOWN
     ; add
+    ;lcall _SEND_DEZ_NUM
     mov DPL,R0
     mov DPH,#0
     movx A,@DPTR
@@ -875,6 +900,7 @@ LOOP_DOWN:
     movx @DPTR,A
     ;clear A-4
     mov A,DPL
+    clr PSW.7
     subb A,#4
     mov DPL,A
     mov A,#0
@@ -887,7 +913,6 @@ PASS_DOWN:
 
     pop ACC
     jnz LOOP_DOWN 
-
 
     acall PUSH_DOWN
     acall PUSH_DOWN
@@ -930,6 +955,7 @@ NOT_UP:
 
     ;mov A,#'L'
     ;acall _TX_CHAR
+    acall MOVE_LEFT
     pop ACC
     acall DISPLAY 
     ret
@@ -942,14 +968,15 @@ NOT_LEFT:
 
     ;mov A,#'R'
     ;acall _TX_CHAR
+    acall MOVE_RIGHT
     pop ACC
     acall DISPLAY 
     ret
 
-NOT_RIGHT:
-    pop ACC
-    acall DISPLAY 
-    ret
+;NOT_RIGHT:
+ ;   pop ACC
+  ;  acall DISPLAY 
+   ; ret
 
 
 PRINT_NUMBER:
@@ -969,12 +996,13 @@ FIND_TABLE:
     jnz FIND_TABLE    
 
     pop ACC
+    clr PSW.7
     subb A,#5       ; got the offset of NUM_2048 to display
     mov DPTR,#NUM_2048
     add A,DPL
     mov DPL,A
     mov DPH,#0
-    acall _TX_STR
+    lcall _TX_STR
     ret
 
 DISPLAY:
@@ -985,7 +1013,7 @@ DISPLAY:
 	;acall _CSI_POS
 	; prompt
    	mov   	dptr, #STR_2    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print30:
     mov DPL,#30h
@@ -994,13 +1022,13 @@ print30:
 	jz printDot30
 
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#30h
     acall PRINT_NUMBER 
 	sjmp print31
 printDot30:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print31:
     mov DPL,#31h
@@ -1009,13 +1037,13 @@ print31:
 	jz printDot31
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#31h
     acall PRINT_NUMBER
 	sjmp print32
 printDot31:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print32:
     mov DPL,#32h
@@ -1024,13 +1052,13 @@ print32:
 	jz printDot32
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#32h
     acall PRINT_NUMBER
 	sjmp print33
 printDot32:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print33:
     mov DPL,#33h
@@ -1039,17 +1067,17 @@ print33:
 	jz printDot33
 
    	mov   	dptr, #Tab		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#33h
     acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	sjmp print34
 printDot33:
    	mov   	dptr, #Dot		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print34:
     mov DPL,#34h
@@ -1058,13 +1086,13 @@ print34:
 	jz printDot34
 
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#34h
     acall PRINT_NUMBER 
 	sjmp print35
 printDot34:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print35:
     mov DPL,#35h
@@ -1073,13 +1101,13 @@ print35:
 	jz printDot35
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#35h
     acall PRINT_NUMBER
 	sjmp print36
 printDot35:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print36:
     mov DPL,#36h
@@ -1088,13 +1116,13 @@ print36:
 	jz printDot36
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#36h
     acall PRINT_NUMBER
 	sjmp print37
 printDot36:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print37:
     mov DPL,#37h
@@ -1103,17 +1131,17 @@ print37:
 	jz printDot37
 
    	mov   	dptr, #Tab		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#37h
     acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	sjmp print38
 printDot37:
    	mov   	dptr, #Dot		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print38:
     mov DPL,#38h
@@ -1122,13 +1150,13 @@ print38:
 	jz printDot38
 
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#38h
     acall PRINT_NUMBER 
 	sjmp print39
 printDot38:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print39:
     mov DPL,#39h
@@ -1137,13 +1165,13 @@ print39:
 	jz printDot39
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#39h
     acall PRINT_NUMBER
 	sjmp print3A
 printDot39:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3A:
     mov DPL,#3Ah
@@ -1152,13 +1180,13 @@ print3A:
 	jz printDot3A
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#3Ah
     acall PRINT_NUMBER
 	sjmp print3B
 printDot3A:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3B:
     mov DPL,#3Bh
@@ -1167,17 +1195,17 @@ print3B:
 	jz printDot3B
 
    	mov   	dptr, #Tab		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#3Bh
     acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	sjmp print3C
 printDot3B:
    	mov   	dptr, #Dot		; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
    	mov   	dptr, #newLine	; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3C:
     mov DPL,#3Ch
@@ -1186,13 +1214,13 @@ print3C:
 	jz printDot3C
 
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
     mov A,#3Ch
     acall PRINT_NUMBER 
 	sjmp print3D
 printDot3C:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3D:
     mov DPL,#3Dh
@@ -1201,13 +1229,13 @@ print3D:
 	jz printDot3D
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#3Dh
     acall PRINT_NUMBER
 	sjmp print3E
 printDot3D:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3E:
     mov DPL,#3Eh
@@ -1216,13 +1244,13 @@ print3E:
 	jz printDot3E
     
    	mov   	dptr, #Tab    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 	mov A,#3Eh
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print3F
 printDot3E:
    	mov   	dptr, #Dot    ; send string 
-	acall   _TX_STR
+	lcall   _TX_STR
 
 print3F:
     mov DPL,#3Fh
