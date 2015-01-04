@@ -5,32 +5,32 @@
 NUM_2048:
     .DB "   2"
     .DB 00H
-    .DB "   4"  ;5
+    .DB "   4"  ;+5
     .DB 00H
-    .DB "   8"  ;10
+    .DB "   8"  ;+10
     .DB 00H
-    .DB "  16"  ;15
+    .DB "  16"  ;+15
     .DB 00H
-    .DB "  32"  ;20
+    .DB "  32"  ;+20
     .DB 00H
-    .DB "  64"  ;25
+    .DB "  64"  ;+25
     .DB 00H
-    .DB " 128"  ;30
+    .DB " 128"  ;+30
     .DB 00H
-    .DB " 256"  ;35
+    .DB " 256"  ;+35
     .DB 00H
-    .DB " 512"  ;40
+    .DB " 512"  ;+40
     .DB 00H
-    .DB "1024"  ;45
+    .DB "1024"  ;+45
     .DB 00H
-    .DB "2048"  ;50
+    .DB "2048"  ;+50
     .DB 00H
-    .DB "4096"  ;55
+    .DB "4096"  ;+55
     .DB 00H
 
+
 ; serial bus interrupt service routine (echos characters)
-	.org    23h
-	
+	.org    23h	
 	JNB RI, ISR_end 	; source is incoming? if not go directly to end
 	clr	RI				; clear RI.
 	mov	A, SBUF			;get char in buffer.
@@ -39,6 +39,7 @@ NUM_2048:
 
    ; mov A,#100
    ; acall _DELAY 
+
    ; mov A,#34
    ; mov DPL,A
    ; mov DPH,#0
@@ -64,69 +65,70 @@ start_main:
 	setb	TI		;send flag TI
 
     mov IE, #0x90	;enable serial interrupt
-	mov A,#10       ; demo for positioning the cursor
+	mov A,#10       ;demo for positioning the cursor
 	;mov B,#10
 	acall _CSI_POS
  
     mov A, #31              ; 30-39 set color 
     acall _CSI_M
 
-    init:
-    mov A,#30
+
+INIT:
+    mov A,#30h
+    mov DPL,A
+    mov DPH,#0
+    mov A,#3
+    movx @DPTR,A
+
+    mov A,#31h
     mov DPL,A
     mov DPH,#0
     mov A,#0   
     movx @DPTR,A
 
-    mov A,#31
-    mov DPL,A
-    mov DPH,#0
-    mov A,#0   
-    movx @DPTR,A
-
-    mov A,#32
+    mov A,#32h
     mov DPL,A
     mov DPH,#0
     mov A,#0
     movx @DPTR,A
 
-    mov A,#33
+    mov A,#33h
     mov DPL,A
     mov DPH,#0
     mov A,#0 
     movx @DPTR,A
 
-    mov A,#34
+    mov A,#34h
     mov DPL,A
     mov DPH,#0
     mov A,#3   
     movx @DPTR,A
 
-    mov A,#35
+    mov A,#35h
     mov DPL,A
     mov DPH,#0
     mov A,#6   
     movx @DPTR,A
 
-    mov A,#36
+    mov A,#36h
     mov DPL,A
     mov DPH,#0
-    mov A,#0   
+    mov A,#11 
     movx @DPTR,A
 
-    mov A,#37
+    mov A,#37h
     mov DPL,A
     mov DPH,#0
     mov A,#0  
     movx @DPTR,A
 
-    mov A,#38
+    mov A,#38h
     mov DPL,A
     mov DPH,#0
     mov A,#3   
     movx @DPTR,A
 
-    mov A,#39
+    mov A,#39h
     mov DPL,A
     mov DPH,#0
     mov A,#7
@@ -147,7 +149,7 @@ start_main:
     mov A,#3Ch
     mov DPL,A
     mov DPH,#0
-    mov A,#3   
+    mov A,#3
     movx @DPTR,A
 
     mov A,#3Dh
@@ -168,10 +170,10 @@ start_main:
     mov A,#0   
     movx @DPTR,A
 
-
     acall DISPLAY
   	;mov   	dptr, #NUM_2048    ; send string 
 	;acall   _TX_STR
+
 
 ; prepare the LED output
 	mov	A, #20
@@ -185,7 +187,7 @@ start_main:
 	mov	A, #0x1
 	movx	@DPTR, A
 
-; inside the main threat we let the LED light move
+; in the main thread we let the LED light move
 loop_end:
 	mov	A, #1
 	acall	_DELAY
@@ -196,6 +198,7 @@ loop_end:
    	movx	@DPTR, A
 
 	ajmp loop_end
+
 
 ; sends m command
 ; expects the argument to be in acc
@@ -271,129 +274,130 @@ _TX_CSI:
     ret
 ; text strings
 
+
 PUSH_UP:
     ; 30
-    mov DPL,#30
+    mov DPL,#30h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_31
     ;check 34
-    mov DPL,#34
+    mov DPL,#34h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_31
 
-        mov DPL,#30
+        mov DPL,#30h
         mov DPH,#0
         movx @DPTR,A    ;34 -> 30
-        mov DPL,#34
+        mov DPL,#34h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 34
 
 UP_CHECK_31:
     ; 31
-    mov DPL,#31
+    mov DPL,#31h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_32
     ;check 35
-    mov DPL,#35
+    mov DPL,#35h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_32
 
-        mov DPL,#31
+        mov DPL,#31h
         mov DPH,#0
         movx @DPTR,A    ;35 -> 31
-        mov DPL,#35
+        mov DPL,#35h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 35
 
 UP_CHECK_32:
     ; 32
-    mov DPL,#32
+    mov DPL,#32h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_33
     ;check 36
-    mov DPL,#36
+    mov DPL,#36h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_33
 
-        mov DPL,#32
+        mov DPL,#32h
         mov DPH,#0
         movx @DPTR,A    ;36 -> 32
-        mov DPL,#36
+        mov DPL,#36h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 36
 
 UP_CHECK_33:
     ; 33
-    mov DPL,#33
+    mov DPL,#33h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_34
     ;check 37
-    mov DPL,#37
+    mov DPL,#37h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_34
 
-        mov DPL,#33
+        mov DPL,#33h
         mov DPH,#0
         movx @DPTR,A    ;37 -> 33
-        mov DPL,#37
+        mov DPL,#37h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 37
 
 UP_CHECK_34:
     ; 34
-    mov DPL,#34
+    mov DPL,#34h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_35
     ;check 38
-    mov DPL,#38
+    mov DPL,#38h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_35
 
-        mov DPL,#34
+        mov DPL,#34h
         mov DPH,#0
         movx @DPTR,A    ;38 -> 34
-        mov DPL,#38
+        mov DPL,#38h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 38
 
 UP_CHECK_35:
     ; 35
-    mov DPL,#35
+    mov DPL,#35h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_36
     ;check 39
-    mov DPL,#39
+    mov DPL,#39h
     mov DPH,#0
     movx A,@DPTR
     jz UP_CHECK_36
 
-        mov DPL,#35
+        mov DPL,#35h
         mov DPH,#0
         movx @DPTR,A    ;39 -> 35
-        mov DPL,#39
+        mov DPL,#39h
         mov DPH,#0
         mov A,#0
         movx @DPTR,A    ;clear 39
 
 UP_CHECK_36:
     ; 36
-    mov DPL,#36
+    mov DPL,#36h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_37
@@ -403,7 +407,7 @@ UP_CHECK_36:
     movx A,@DPTR
     jz UP_CHECK_37
 
-        mov DPL,#36
+        mov DPL,#36h
         mov DPH,#0
         movx @DPTR,A    ;3A -> 36
         mov DPL,#3Ah
@@ -413,7 +417,7 @@ UP_CHECK_36:
 
 UP_CHECK_37:
     ; 37
-    mov DPL,#37
+    mov DPL,#37h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_38
@@ -423,7 +427,7 @@ UP_CHECK_37:
     movx A,@DPTR
     jz UP_CHECK_38
 
-        mov DPL,#37
+        mov DPL,#37h
         mov DPH,#0
         movx @DPTR,A    ;3B -> 37
         mov DPL,#3Bh
@@ -433,7 +437,7 @@ UP_CHECK_37:
 
 UP_CHECK_38:
     ; 38
-    mov DPL,#38
+    mov DPL,#38h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_39
@@ -443,7 +447,7 @@ UP_CHECK_38:
     movx A,@DPTR
     jz UP_CHECK_39
 
-        mov DPL,#38
+        mov DPL,#38h
         mov DPH,#0
         movx @DPTR,A    ;3C -> 38
         mov DPL,#3Ch
@@ -453,7 +457,7 @@ UP_CHECK_38:
         
 UP_CHECK_39:
     ; 39
-    mov DPL,#39
+    mov DPL,#39h
     mov DPH,#0
     movx A,@DPTR
     jnz UP_CHECK_3A
@@ -463,7 +467,7 @@ UP_CHECK_39:
     movx A,@DPTR
     jz UP_CHECK_3A
 
-        mov DPL,#39
+        mov DPL,#39h
         mov DPH,#0
         movx @DPTR,A    ;3D -> 39
         mov DPL,#3Dh
@@ -518,11 +522,12 @@ MOVE_UP:
     push ACC
     push B
     acall PUSH_UP    ;compact
+    acall PUSH_UP    ;compact
+    acall PUSH_UP    ;compact
    
     ;merge
     mov R0,#30h     
     mov A,#12        ;repeat 12 times
-
 LOOP_UP:
     dec A
     push ACC
@@ -532,15 +537,15 @@ LOOP_UP:
     mov DPH,#0          ;must clear DPH
     movx A,@DPTR
     JZ PASS_UP          ;if A == 0 then pass
-    mov R1,A            ;R1 <-- A
 
+    mov R1,A            ;R1 <-- A
     mov A,DPL
     add A,#4
     mov DPL,A
     mov DPH,#0
     movx A,@DPTR        ;A+4
 
-    CJNE A,01H,PASS_UP  ;not equal ==> jmp
+    CJNE A,01H,PASS_UP  ;A is not equal to R1 ==> jmp
     ; add
     mov DPL,R0
     mov DPH,#0
@@ -580,6 +585,9 @@ PASS_UP:
 ;    mov DPH,#0
 ;
 ;    acall _TX_STR
+
+    acall PUSH_UP
+    acall PUSH_UP
     acall PUSH_UP
     ;acall IF_DIE 
     pop B
@@ -592,7 +600,7 @@ DETECT_ARROW:
     anl A,#0x9B		; Down
     jnz NOT_DOWN
 
-    ;mov A,#'D'		;DO SOMETHING
+    ;mov A,#'D'		; moving down
     ;acall _TX_CHAR
     pop ACC
     acall DISPLAY 
@@ -617,8 +625,8 @@ NOT_UP:
     anl A,#0x93     ; Left
     jnz NOT_LEFT
 
-    mov A,#'L'
-    acall _TX_CHAR
+    ;mov A,#'L'
+    ;acall _TX_CHAR
     pop ACC
     acall DISPLAY 
     ret
@@ -629,8 +637,8 @@ NOT_LEFT:
     anl A,#0x8D     ; Right
     jnz NOT_RIGHT
 
-    mov A,#'R'
-    acall _TX_CHAR
+    ;mov A,#'R'
+    ;acall _TX_CHAR
     pop ACC
     acall DISPLAY 
     ret
@@ -640,8 +648,8 @@ NOT_RIGHT:
     acall DISPLAY 
     ret
 
-PRINT_NUMBER:
 
+PRINT_NUMBER:
     mov DPL,A
     mov DPH,#0
     movx A, @DPTR
@@ -655,22 +663,19 @@ FIND_TABLE:
     add A,#5
     push ACC
     mov A,R3
-
     jnz FIND_TABLE    
-    pop ACC
-    subb A,#5       ; so we get the offset of NUM_2048 to display
 
+    pop ACC
+    subb A,#5       ; got the offset of NUM_2048 to display
     mov DPTR,#NUM_2048
     add A,DPL
     mov DPL,A
     mov DPH,#0
     acall _TX_STR
-    
     ret
 
 DISPLAY:
 	push ACC
-
 	; move back cursor
 	;mov A,#10				; demo for positioning the cursor
 	;mov B,#10
@@ -680,14 +685,14 @@ DISPLAY:
 	acall   _TX_STR
 
 print30:
-    mov DPL,#30
+    mov DPL,#30h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot30
 
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-    mov A,#30
+    mov A,#30h
     acall PRINT_NUMBER 
 	sjmp print31
 printDot30:
@@ -695,14 +700,14 @@ printDot30:
 	acall   _TX_STR
 
 print31:
-    mov DPL,#31
+    mov DPL,#31h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot31
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,#31
+	mov A,#31h
     acall PRINT_NUMBER
 	sjmp print32
 printDot31:
@@ -710,14 +715,14 @@ printDot31:
 	acall   _TX_STR
 
 print32:
-    mov DPL,#32
+    mov DPL,#32h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot32
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,#32
+	mov A,#32h
     acall PRINT_NUMBER
 	sjmp print33
 printDot32:
@@ -725,14 +730,14 @@ printDot32:
 	acall   _TX_STR
 
 print33:
-    mov DPL,#33
+    mov DPL,#33h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot33
 
    	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
-    mov A,#33
+    mov A,#33h
     acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
@@ -744,14 +749,14 @@ printDot33:
 	acall   _TX_STR
 
 print34:
-    mov DPL,#34
+    mov DPL,#34h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot34
 
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-    mov A,#34
+    mov A,#34h
     acall PRINT_NUMBER 
 	sjmp print35
 printDot34:
@@ -759,14 +764,14 @@ printDot34:
 	acall   _TX_STR
 
 print35:
-    mov DPL,#35
+    mov DPL,#35h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot35
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,#35
+	mov A,#35h
     acall PRINT_NUMBER
 	sjmp print36
 printDot35:
@@ -774,14 +779,14 @@ printDot35:
 	acall   _TX_STR
 
 print36:
-    mov DPL,#36
+    mov DPL,#36h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot36
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,#36
+	mov A,#36h
     acall PRINT_NUMBER
 	sjmp print37
 printDot36:
@@ -789,14 +794,14 @@ printDot36:
 	acall   _TX_STR
 
 print37:
-    mov DPL,#37
+    mov DPL,#37h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot37
 
    	mov   	dptr, #Tab		; send string 
 	acall   _TX_STR
-    mov A,#37
+    mov A,#37h
     acall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	acall   _TX_STR
@@ -808,14 +813,14 @@ printDot37:
 	acall   _TX_STR
 
 print38:
-    mov DPL,#38
+    mov DPL,#38h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot38
 
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-    mov A,#38
+    mov A,#38h
     acall PRINT_NUMBER 
 	sjmp print39
 printDot38:
@@ -823,14 +828,14 @@ printDot38:
 	acall   _TX_STR
 
 print39:
-    mov DPL,#39
+    mov DPL,#39h
     mov DPH,#0
 	movx A,@DPTR
 	jz printDot39
     
    	mov   	dptr, #Tab    ; send string 
 	acall   _TX_STR
-	mov A,#39
+	mov A,#39h
     acall PRINT_NUMBER
 	sjmp print3A
 printDot39:
@@ -941,6 +946,7 @@ endPrint:
 	pop ACC
     ret    
 
+
 newLine:
 	.DB "\r\n"
 	.DB 00H
@@ -965,8 +971,9 @@ NUMBER_STR:
 	.DB "0123456789ABCDEF"
 
 CLR_SCREEN:
-    .DB "\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+    .DB "\r\n\r\n\r\n\r\n\r\n\r\n\r\n" ; 7 times
     .DB 00H
+
 
 _DELAY:
 	mov R0, A
