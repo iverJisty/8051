@@ -12,16 +12,16 @@ do
 
   case "$key" in
     
-    $'\e[A' | $'\e0A')  
+    $'\e[A' | $'\e0A')  # UP 
         echo 'u' > /dev/ttyUSB0;;
 
-    $'\e[B' | $'\e0B')
+    $'\e[B' | $'\e0B')  # DOWN
         echo 'd' > /dev/ttyUSB0;;
 
-    $'\e[D' | $'\e0D')
+    $'\e[D' | $'\e0D')  # LEFT
         echo 'l' > /dev/ttyUSB0;;
 
-    $'\e[C' | $'\e0C') 
+    $'\e[C' | $'\e0C')  # RIGHT
         echo 'r' > /dev/ttyUSB0;;
   
   esac                  
