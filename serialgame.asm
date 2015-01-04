@@ -35,6 +35,7 @@ NUM_2048:
 	clr	RI				; clear RI.
 	mov	A, SBUF			;get char in buffer.
 	;acall _TX_CHAR		;send character
+    clr 25h
     acall DETECT_ARROW
 
    ; mov A,#100
@@ -59,10 +60,15 @@ ISR_end:
 start_main:
 ; prepare the serial bus
 	mov	SCON, #0x50	;Serial port work in mode 1, enable receive
-	mov	TMOD, #0x20	;timer 1 work in mode 2
+	;mov	TMOD, #0x20	;timer 1 work in mode 2
+	mov	TMOD, #0x22	;timer 0 & 1 work in mode 2
 	mov	TH1, #255	;timer 1 reload value = 255
 	setb	TR1		;start timer 1
 	setb	TI		;send flag TI
+
+
+	mov	TH0, #0 	;timer 0 reload value = 0
+    setb    TR0     ;start timer 0
 
     mov IE, #0x90	;enable serial interrupt
 	mov A,#10       ;demo for positioning the cursor
@@ -77,31 +83,31 @@ INIT:
     mov A,#30h
     mov DPL,A
     mov DPH,#0
-    mov A,#3
+    mov A,#0
     movx @DPTR,A
 
     mov A,#31h
     mov DPL,A
     mov DPH,#0
-    mov A,#3
+    mov A,#0
     movx @DPTR,A
 
     mov A,#32h
     mov DPL,A
     mov DPH,#0
-    mov A,#3
+    mov A,#0
     movx @DPTR,A
 
     mov A,#33h
     mov DPL,A
     mov DPH,#0
-    mov A,#3 
+    mov A,#0 
     movx @DPTR,A
 
     mov A,#34h
     mov DPL,A
     mov DPH,#0
-    mov A,#2   
+    mov A,#0   
     movx @DPTR,A
 
     mov A,#35h
@@ -113,7 +119,7 @@ INIT:
     mov A,#36h
     mov DPL,A
     mov DPH,#0
-    mov A,#2 
+    mov A,#0 
     movx @DPTR,A
 
     mov A,#37h
@@ -125,13 +131,13 @@ INIT:
     mov A,#38h
     mov DPL,A
     mov DPH,#0
-    mov A,#4   
+    mov A,#0   
     movx @DPTR,A
 
     mov A,#39h
     mov DPL,A
     mov DPH,#0
-    mov A,#5
+    mov A,#0
     movx @DPTR,A
 
     mov A,#3Ah
@@ -143,13 +149,13 @@ INIT:
     mov A,#3Bh
     mov DPL,A
     mov DPH,#0
-    mov A,#6  
+    mov A,#0  
     movx @DPTR,A
 
     mov A,#3Ch
     mov DPL,A
     mov DPH,#0
-    mov A,#3
+    mov A,#0
     movx @DPTR,A
 
     mov A,#3Dh
@@ -170,7 +176,7 @@ INIT:
     mov A,#0   
     movx @DPTR,A
 
-    acall DISPLAY
+    lcall DISPLAY
     ;mov A, #30h
     ;acall PUSH_LEFT_sub
     ;acall DISPLAY
@@ -197,7 +203,7 @@ loop_end:
 
 	mov	DPTR, #0xA000
 	movx	A, @DPTR
-	rl	A
+	inc	A
    	movx	@DPTR, A
 
 	ajmp loop_end
@@ -1179,16 +1185,50 @@ MOVE_RIGHT:
     acall PUSH_RIGHT
     ret
 
+GEN_RAND:
+    push ACC
+    push B
+    push DPH
+    push DPL
+
+    mov DPTR,#LOG
+    lcall _TX_STR
+FIND_EMPTY:
+    mov A,TL0
+    mov B,#16
+    div AB
+    mov A,B
+    add A,#30h
+
+    mov DPL,A
+    mov DPH,#0
+    movx A, @DPTR
+    push ACC
+    mov A,#15
+    lcall _DELAY
+    pop ACC
+    jnz FIND_EMPTY
+
+    mov A, #1
+    movx @DPTR, A
+    
+    mov DPTR,#LOG_END
+    lcall _TX_STR
+    pop DPL
+    pop DPH
+    pop B
+    pop ACC
+    ret
+
 DETECT_ARROW:
     push ACC
     anl A,#0x9B		; Down
     jnz NOT_DOWN
-
-    ;mov A,#'D'		; moving down
-    ;acall _TX_CHAR
-    acall MOVE_DOWN
+    
+    lcall MOVE_DOWN
+    lcall GEN_RAND
     pop ACC
-    acall DISPLAY 
+    lcall DISPLAY 
     ret
 
 NOT_DOWN:
@@ -1197,11 +1237,10 @@ NOT_DOWN:
     anl A,#0x8A     ; Up
     jnz NOT_UP
 
-    ;mov A,#'U'
-    ;acall _TX_CHAR
-    acall MOVE_UP
+    lcall MOVE_UP
+    lcall GEN_RAND
     pop ACC
-    acall DISPLAY 
+    lcall DISPLAY 
     ret
 
 NOT_UP:
@@ -1210,11 +1249,10 @@ NOT_UP:
     anl A,#0x93     ; Left
     jnz NOT_LEFT
 
-    ;mov A,#'L'
-    ;acall _TX_CHAR
-    acall MOVE_LEFT
+    lcall MOVE_LEFT
+    lcall GEN_RAND
     pop ACC
-    acall DISPLAY 
+    lcall DISPLAY 
     ret
     
 NOT_LEFT:
@@ -1223,16 +1261,15 @@ NOT_LEFT:
     anl A,#0x8D     ; Right
     jnz NOT_RIGHT
 
-    ;mov A,#'R'
-    ;acall _TX_CHAR
-    acall MOVE_RIGHT
+    lcall MOVE_RIGHT
+    lcall GEN_RAND
     pop ACC
-    acall DISPLAY 
+    lcall DISPLAY 
     ret
 
 NOT_RIGHT:
     pop ACC
-    acall DISPLAY 
+    lcall DISPLAY 
     ret
 
 
@@ -1562,6 +1599,12 @@ CLR_SCREEN:
     .DB "\r\n\r\n\r\n\r\n\r\n\r\n\r\n" ; 7 times
     .DB 00H
 
+LOG:
+    .DB "Start gen_random num\r\n"
+    .DB 00H
+LOG_END:
+    .DB "End gen_random num\r\n"
+    .DB 00H
 
 _DELAY:
 	mov R0, A

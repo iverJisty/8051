@@ -1,5 +1,6 @@
 #!/bin/bash
 
+clear
 cat /dev/ttyUSB0 &
 while read -sN1 key # 1 char (not delimiter), silent
 do
