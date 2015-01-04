@@ -38,23 +38,6 @@ NUM_2048:
     mov 25h, #0
     lcall DETECT_ARROW
 
-   ; mov 25h, #24
-
-   ; mov A,#100
-   ; acall _DELAY 
-
-   ; mov A,#34
-   ; mov DPL,A
-   ; mov DPH,#0
-   ; mov A,#0   
-   ; movx @DPTR,A
-
-   ; mov A,#35
-   ; mov DPL,A
-   ; mov DPH,#0
-   ; mov A,#0   
-   ; movx @DPTR,A
-   ; acall DISPLAY
 ISR_end:
 	reti
 
@@ -67,7 +50,6 @@ start_main:
 	mov	TH1, #255	;timer 1 reload value = 255
 	setb	TR1		;start timer 1
 	setb	TI		;send flag TI
-
 
 	mov	TH0, #0 	;timer 0 reload value = 0
     setb    TR0     ;start timer 0
@@ -181,11 +163,6 @@ INIT:
     lcall GEN_RAND
     lcall GEN_RAND
     lcall DISPLAY
-    ;mov A, #30h
-    ;acall PUSH_LEFT_sub
-    ;acall DISPLAY
-  	;mov   	dptr, #NUM_2048    ; send string 
-	;acall   _TX_STR
 
 
 ; prepare the LED output
@@ -594,28 +571,9 @@ PASS_UP:
     pop ACC
     jnz LOOP_UP 
 
-;    mov DPL,#0x30
-;    mov DPH,#0
-;    movx A,@DPTR
-;    acall _SEND_DEZ_NUM
-;
-;    mov DPL,#0x31
-;    mov DPH,#0
-;    movx A,@DPTR
-;    acall _SEND_DEZ_NUM
-;
-;    mov DPTR,#NUM_2048
-;    mov A,#40           ;add 5 at a time
-;    add A,DPL
-;    mov DPL,A
-;    mov DPH,#0
-;
-;    acall _TX_STR
-
     acall PUSH_UP
     acall PUSH_UP
     acall PUSH_UP
-    ;acall IF_DIE 
     pop B
     pop ACC
     ret
@@ -896,8 +854,6 @@ LOOP_DOWN:
     movx A,@DPTR
     JZ PASS_DOWN          ;if A == 0 then pass
 
-    ;clr PSW.4
-    ;clr PSW.3
     mov R1,A            ;R1 <-- A
     mov A,DPL
     clr PSW.7
@@ -905,32 +861,12 @@ LOOP_DOWN:
     mov DPL,A
     mov DPH,#0
     movx A,@DPTR        ;A-4
-    
-    ;test
-    ;mov R5,A
-    ;mov A,R1
-    ;lcall _SEND_DEZ_NUM
-    ;mov A,R5
-    ;lcall _SEND_DEZ_NUM
-    
 
-    ;CJNE A,01H,PASS_DOWN  ;A is not equal to R1 ==> jmp
     clr PSW.7
     subb A,R1
-
-    ;mov R5,A
-    ;mov A,R1
-    ;lcall _SEND_DEZ_NUM
-    ;mov A,R5
-    ;lcall _SEND_DEZ_NUM
-   
-    ;lcall _SEND_DEZ_NUM
-    ;mov DPTR,#newLine
-    ;lcall _TX_STR
     jnz PASS_DOWN
     mov 25h, #24
     ; add
-    ;lcall _SEND_DEZ_NUM
     mov DPL,R0
     mov DPH,#0
     movx A,@DPTR
@@ -956,7 +892,6 @@ PASS_DOWN:
     acall PUSH_DOWN
     acall PUSH_DOWN
     acall PUSH_DOWN
-    ;acall IF_DIE 
     pop B
     pop ACC
     ret
@@ -1229,8 +1164,8 @@ GEN_RAND:
     push DPH
     push DPL
 
-    mov DPTR,#LOG
-    lcall _TX_STR
+;    mov DPTR,#LOG
+;    lcall _TX_STR
 FIND_EMPTY:
     mov A,TL0
     mov B,#16
@@ -1250,8 +1185,8 @@ FIND_EMPTY:
     mov A, #1
     movx @DPTR, A
     
-    mov DPTR,#LOG_END
-    lcall _TX_STR
+ ;   mov DPTR,#LOG_END
+ ;   lcall _TX_STR
     pop DPL
     pop DPH
     pop B
@@ -1359,10 +1294,6 @@ FIND_TABLE:
 
 DISPLAY:
 	push ACC
-	; move back cursor
-	;mov A,#10				; demo for positioning the cursor
-	;mov B,#10
-	;lcall _CSI_POS
 	; prompt
    	mov   	dptr, #STR_2    ; send string 
 	lcall   _TX_STR
@@ -1657,12 +1588,12 @@ CLR_SCREEN:
     .DB "\r\n\r\n\r\n\r\n\r\n\r\n\r\n" ; 7 times
     .DB 00H
 
-LOG:
-    .DB "Start gen_random num\r\n"
-    .DB 00H
-LOG_END:
-    .DB "End gen_random num\r\n"
-    .DB 00H
+;LOG:
+;    .DB "Start gen_random num\r\n"
+;    .DB 00H
+;LOG_END:
+;    .DB "End gen_random num\r\n"
+;    .DB 00H
 
 _DELAY:
 	mov R0, A
