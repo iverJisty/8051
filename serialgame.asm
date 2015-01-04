@@ -83,37 +83,37 @@ INIT:
     mov A,#31h
     mov DPL,A
     mov DPH,#0
-    mov A,#0   
+    mov A,#3
     movx @DPTR,A
 
     mov A,#32h
     mov DPL,A
     mov DPH,#0
-    mov A,#0
+    mov A,#3
     movx @DPTR,A
 
     mov A,#33h
     mov DPL,A
     mov DPH,#0
-    mov A,#0 
+    mov A,#3 
     movx @DPTR,A
 
     mov A,#34h
     mov DPL,A
     mov DPH,#0
-    mov A,#3   
+    mov A,#2   
     movx @DPTR,A
 
     mov A,#35h
     mov DPL,A
     mov DPH,#0
-    mov A,#5
+    mov A,#0
     movx @DPTR,A
 
     mov A,#36h
     mov DPL,A
     mov DPH,#0
-    mov A,#8 
+    mov A,#2 
     movx @DPTR,A
 
     mov A,#37h
@@ -125,7 +125,7 @@ INIT:
     mov A,#38h
     mov DPL,A
     mov DPH,#0
-    mov A,#3   
+    mov A,#4   
     movx @DPTR,A
 
     mov A,#39h
@@ -143,7 +143,7 @@ INIT:
     mov A,#3Bh
     mov DPL,A
     mov DPH,#0
-    mov A,#0  
+    mov A,#6  
     movx @DPTR,A
 
     mov A,#3Ch
@@ -171,6 +171,9 @@ INIT:
     movx @DPTR,A
 
     acall DISPLAY
+    ;mov A, #30h
+    ;acall PUSH_LEFT_sub
+    ;acall DISPLAY
   	;mov   	dptr, #NUM_2048    ; send string 
 	;acall   _TX_STR
 
@@ -922,6 +925,260 @@ PASS_DOWN:
     pop ACC
     ret
 
+PUSH_LEFT_sub:
+    push ACC
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    jnz PUSH_LEFT_sub_exit ; not empty -> cannot move
+
+    mov A, DPL
+    inc A
+    mov DPL,A
+    mov DPH, #0
+    movx A, @DPTR ; number beside
+    mov R2, A
+    mov A, #0
+    movx @DPTR, A ; clear
+
+    mov A, DPL
+    dec A
+    mov DPL,A
+    mov DPH, #0
+    mov A, R2
+    movx @DPTR, A ; move
+    
+PUSH_LEFT_sub_exit:
+    pop ACC
+    ret
+
+PUSH_LEFT:
+    mov A, #30h
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+
+    mov A, #34h
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+
+    mov A, #38h
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+
+    mov A, #3Ch
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+    inc A
+    acall PUSH_LEFT_sub
+    ret
+
+MOVE_LEFT_sub:
+    push ACC
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    jz MOVE_LEFT_sub_exit
+
+    mov R2, A
+    mov A, DPL
+    inc A
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+
+    clr PSW.7
+    subb A, R2
+    jnz MOVE_LEFT_sub_exit
+    
+    mov A, #0
+    movx @DPTR, A
+    mov A, DPL
+    dec A
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    inc A
+    movx @DPTR, A
+
+MOVE_LEFT_sub_exit:
+    pop ACC
+    ret
+
+MOVE_LEFT:
+    acall PUSH_LEFT
+    acall PUSH_LEFT
+    acall PUSH_LEFT
+    
+    mov A, #30h
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+
+    mov A, #34h
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+
+    mov A, #38h
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+
+    mov A, #3Ch
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+    inc A
+    acall MOVE_LEFT_sub
+
+    acall PUSH_LEFT
+    acall PUSH_LEFT
+    acall PUSH_LEFT
+    ret
+
+PUSH_RIGHT_sub:
+    push ACC
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    jnz PUSH_RIGHT_sub_exit ; not empty -> cannot move
+
+    mov A, DPL
+    dec A
+    mov DPL,A
+    mov DPH, #0
+    movx A, @DPTR ; number beside
+    mov R2, A
+    mov A, #0
+    movx @DPTR, A ; clear
+
+    mov A, DPL
+    inc A
+    mov DPL,A
+    mov DPH, #0
+    mov A, R2
+    movx @DPTR, A ; move
+    
+PUSH_RIGHT_sub_exit:
+    pop ACC
+    ret
+
+PUSH_RIGHT:
+    mov A, #33h
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+
+    mov A, #37h
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+
+    mov A, #3Bh
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+
+    mov A, #3Fh
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+    dec A
+    acall PUSH_RIGHT_sub
+    ret
+
+MOVE_RIGHT_sub:
+    push ACC
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    jz MOVE_RIGHT_sub_exit
+
+    mov R2, A
+    mov A, DPL
+    dec A
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+
+    clr PSW.7
+    subb A, R2
+    jnz MOVE_RIGHT_sub_exit
+    
+    mov A, #0
+    movx @DPTR, A
+    mov A, DPL
+    inc A
+    mov DPL, A
+    mov DPH, #0
+    movx A, @DPTR
+    inc A
+    movx @DPTR, A
+
+MOVE_RIGHT_sub_exit:
+    pop ACC
+    ret
+
+MOVE_RIGHT:
+    acall PUSH_RIGHT
+    acall PUSH_RIGHT
+    acall PUSH_RIGHT
+    
+    mov A, #33h
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+
+    mov A, #37h
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+
+    mov A, #3Bh
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+
+    mov A, #3Fh
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+    dec A
+    acall MOVE_RIGHT_sub
+
+    acall PUSH_RIGHT
+    acall PUSH_RIGHT
+    acall PUSH_RIGHT
+    ret
+
 DETECT_ARROW:
     push ACC
     anl A,#0x9B		; Down
@@ -973,10 +1230,10 @@ NOT_LEFT:
     acall DISPLAY 
     ret
 
-;NOT_RIGHT:
- ;   pop ACC
-  ;  acall DISPLAY 
-   ; ret
+NOT_RIGHT:
+    pop ACC
+    acall DISPLAY 
+    ret
 
 
 PRINT_NUMBER:
@@ -1010,7 +1267,7 @@ DISPLAY:
 	; move back cursor
 	;mov A,#10				; demo for positioning the cursor
 	;mov B,#10
-	;acall _CSI_POS
+	;lcall _CSI_POS
 	; prompt
    	mov   	dptr, #STR_2    ; send string 
 	lcall   _TX_STR
@@ -1024,7 +1281,7 @@ print30:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
     mov A,#30h
-    acall PRINT_NUMBER 
+    lcall PRINT_NUMBER 
 	sjmp print31
 printDot30:
    	mov   	dptr, #Dot    ; send string 
@@ -1039,7 +1296,7 @@ print31:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#31h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print32
 printDot31:
    	mov   	dptr, #Dot    ; send string 
@@ -1054,7 +1311,7 @@ print32:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#32h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print33
 printDot32:
    	mov   	dptr, #Dot    ; send string 
@@ -1069,7 +1326,7 @@ print33:
    	mov   	dptr, #Tab		; send string 
 	lcall   _TX_STR
     mov A,#33h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	lcall   _TX_STR
 	sjmp print34
@@ -1088,7 +1345,7 @@ print34:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
     mov A,#34h
-    acall PRINT_NUMBER 
+    lcall PRINT_NUMBER 
 	sjmp print35
 printDot34:
    	mov   	dptr, #Dot    ; send string 
@@ -1103,7 +1360,7 @@ print35:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#35h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print36
 printDot35:
    	mov   	dptr, #Dot    ; send string 
@@ -1118,7 +1375,7 @@ print36:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#36h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print37
 printDot36:
    	mov   	dptr, #Dot    ; send string 
@@ -1133,7 +1390,7 @@ print37:
    	mov   	dptr, #Tab		; send string 
 	lcall   _TX_STR
     mov A,#37h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	lcall   _TX_STR
 	sjmp print38
@@ -1152,7 +1409,7 @@ print38:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
     mov A,#38h
-    acall PRINT_NUMBER 
+    lcall PRINT_NUMBER 
 	sjmp print39
 printDot38:
    	mov   	dptr, #Dot    ; send string 
@@ -1167,7 +1424,7 @@ print39:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#39h
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print3A
 printDot39:
    	mov   	dptr, #Dot    ; send string 
@@ -1182,7 +1439,7 @@ print3A:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#3Ah
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print3B
 printDot3A:
    	mov   	dptr, #Dot    ; send string 
@@ -1197,7 +1454,7 @@ print3B:
    	mov   	dptr, #Tab		; send string 
 	lcall   _TX_STR
     mov A,#3Bh
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
    	mov   	dptr, #newLine	; send string 
 	lcall   _TX_STR
 	sjmp print3C
@@ -1216,7 +1473,7 @@ print3C:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
     mov A,#3Ch
-    acall PRINT_NUMBER 
+    lcall PRINT_NUMBER 
 	sjmp print3D
 printDot3C:
    	mov   	dptr, #Dot    ; send string 
@@ -1231,7 +1488,7 @@ print3D:
    	mov   	dptr, #Tab    ; send string 
 	lcall   _TX_STR
 	mov A,#3Dh
-    acall PRINT_NUMBER
+    lcall PRINT_NUMBER
 	sjmp print3E
 printDot3D:
    	mov   	dptr, #Dot    ; send string 
