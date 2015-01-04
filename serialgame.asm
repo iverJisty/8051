@@ -35,8 +35,10 @@ NUM_2048:
 	clr	RI				; clear RI.
 	mov	A, SBUF			;get char in buffer.
 	;acall _TX_CHAR		;send character
-    clr 25h
-    acall DETECT_ARROW
+    mov 25h, #0
+    lcall DETECT_ARROW
+
+   ; mov 25h, #24
 
    ; mov A,#100
    ; acall _DELAY 
@@ -75,7 +77,7 @@ start_main:
 	;mov B,#10
 	acall _CSI_POS
  
-    mov A, #31              ; 30-39 set color 
+    mov A, #35              ; 30-39 set color 
     acall _CSI_M
 
 
@@ -176,6 +178,8 @@ INIT:
     mov A,#0   
     movx @DPTR,A
 
+    lcall GEN_RAND
+    lcall GEN_RAND
     lcall DISPLAY
     ;mov A, #30h
     ;acall PUSH_LEFT_sub
@@ -296,6 +300,7 @@ PUSH_UP:
     movx A,@DPTR
     jz UP_CHECK_31
 
+        mov 25h, #24
         mov DPL,#30h
         mov DPH,#0
         movx @DPTR,A    ;34 -> 30
@@ -316,6 +321,7 @@ UP_CHECK_31:
     movx A,@DPTR
     jz UP_CHECK_32
 
+        mov 25h, #24
         mov DPL,#31h
         mov DPH,#0
         movx @DPTR,A    ;35 -> 31
@@ -336,6 +342,7 @@ UP_CHECK_32:
     movx A,@DPTR
     jz UP_CHECK_33
 
+        mov 25h, #24
         mov DPL,#32h
         mov DPH,#0
         movx @DPTR,A    ;36 -> 32
@@ -356,6 +363,7 @@ UP_CHECK_33:
     movx A,@DPTR
     jz UP_CHECK_34
 
+        mov 25h, #24
         mov DPL,#33h
         mov DPH,#0
         movx @DPTR,A    ;37 -> 33
@@ -376,6 +384,7 @@ UP_CHECK_34:
     movx A,@DPTR
     jz UP_CHECK_35
 
+        mov 25h, #24
         mov DPL,#34h
         mov DPH,#0
         movx @DPTR,A    ;38 -> 34
@@ -396,6 +405,7 @@ UP_CHECK_35:
     movx A,@DPTR
     jz UP_CHECK_36
 
+        mov 25h, #24
         mov DPL,#35h
         mov DPH,#0
         movx @DPTR,A    ;39 -> 35
@@ -416,6 +426,7 @@ UP_CHECK_36:
     movx A,@DPTR
     jz UP_CHECK_37
 
+        mov 25h, #24
         mov DPL,#36h
         mov DPH,#0
         movx @DPTR,A    ;3A -> 36
@@ -436,6 +447,7 @@ UP_CHECK_37:
     movx A,@DPTR
     jz UP_CHECK_38
 
+        mov 25h, #24
         mov DPL,#37h
         mov DPH,#0
         movx @DPTR,A    ;3B -> 37
@@ -456,6 +468,7 @@ UP_CHECK_38:
     movx A,@DPTR
     jz UP_CHECK_39
 
+        mov 25h, #24
         mov DPL,#38h
         mov DPH,#0
         movx @DPTR,A    ;3C -> 38
@@ -476,6 +489,7 @@ UP_CHECK_39:
     movx A,@DPTR
     jz UP_CHECK_3A
 
+        mov 25h, #24
         mov DPL,#39h
         mov DPH,#0
         movx @DPTR,A    ;3D -> 39
@@ -496,6 +510,7 @@ UP_CHECK_3A:
     movx A,@DPTR
     jz UP_CHECK_3B
 
+        mov 25h, #24
         mov DPL,#3Ah
         mov DPH,#0
         movx @DPTR,A    ;3E -> 3A
@@ -516,6 +531,7 @@ UP_CHECK_3B:
     movx A,@DPTR
     jz PUSH_UP_EXIT
 
+        mov 25h, #24
         mov DPL,#3Bh
         mov DPH,#0
         movx @DPTR,A    ;3F -> 3B
@@ -555,6 +571,7 @@ LOOP_UP:
     movx A,@DPTR        ;A+4
 
     CJNE A,01H,PASS_UP  ;A is not equal to R1 ==> jmp
+    mov 25h, #24
     ; add
     mov DPL,R0
     mov DPH,#0
@@ -615,6 +632,7 @@ PUSH_DOWN:
     movx A,@DPTR
     jz DOWN_CHECK_3E
 
+        mov 25h, #24
         mov DPL,#3Fh
         mov DPH,#0
         movx @DPTR,A    ;3B -> 3F
@@ -635,6 +653,7 @@ DOWN_CHECK_3E:
     movx A,@DPTR
     jz DOWN_CHECK_3D
 
+        mov 25h, #24
         mov DPL,#3Eh
         mov DPH,#0
         movx @DPTR,A    ;3A -> 3E
@@ -655,6 +674,7 @@ DOWN_CHECK_3D:
     movx A,@DPTR
     jz DOWN_CHECK_3C
 
+        mov 25h, #24
         mov DPL,#3Dh
         mov DPH,#0
         movx @DPTR,A    ;39 -> 3D
@@ -675,6 +695,7 @@ DOWN_CHECK_3C:
     movx A,@DPTR
     jz DOWN_CHECK_3B
 
+        mov 25h, #24
         mov DPL,#3Ch
         mov DPH,#0
         movx @DPTR,A    ;38 -> 3C
@@ -695,6 +716,7 @@ DOWN_CHECK_3B:
     movx A,@DPTR
     jz DOWN_CHECK_3A
 
+        mov 25h, #24
         mov DPL,#3Bh
         mov DPH,#0
         movx @DPTR,A    ;37 -> 3B
@@ -715,6 +737,7 @@ DOWN_CHECK_3A:
     movx A,@DPTR
     jz DOWN_CHECK_39
 
+        mov 25h, #24
         mov DPL,#3Ah
         mov DPH,#0
         movx @DPTR,A    ;36 -> 3A
@@ -735,6 +758,7 @@ DOWN_CHECK_39:
     movx A,@DPTR
     jz DOWN_CHECK_38
 
+        mov 25h, #24
         mov DPL,#39h
         mov DPH,#0
         movx @DPTR,A    ;35 -> 39
@@ -755,6 +779,7 @@ DOWN_CHECK_38:
     movx A,@DPTR
     jz DOWN_CHECK_37
 
+        mov 25h, #24
         mov DPL,#38h
         mov DPH,#0
         movx @DPTR,A    ;34 -> 38
@@ -776,6 +801,7 @@ DOWN_CHECK_37:
     movx A,@DPTR
     jz DOWN_CHECK_36
 
+        mov 25h, #24
         mov DPL,#37h
         mov DPH,#0
         movx @DPTR,A    ;33 -> 37
@@ -796,6 +822,7 @@ DOWN_CHECK_36:
     movx A,@DPTR
     jz DOWN_CHECK_35
 
+        mov 25h, #24
         mov DPL,#36h
         mov DPH,#0
         movx @DPTR,A    ;32 -> 36
@@ -816,6 +843,7 @@ DOWN_CHECK_35:
     movx A,@DPTR
     jz DOWN_CHECK_34
 
+        mov 25h, #24
         mov DPL,#35h
         mov DPH,#0
         movx @DPTR,A    ;31 -> 35
@@ -836,6 +864,7 @@ DOWN_CHECK_34:
     movx A,@DPTR
     jz PUSH_DOWN_EXIT
 
+        mov 25h, #24
         mov DPL,#34h
         mov DPH,#0
         movx @DPTR,A    ;30 -> 34
@@ -899,6 +928,7 @@ LOOP_DOWN:
     ;mov DPTR,#newLine
     ;lcall _TX_STR
     jnz PASS_DOWN
+    mov 25h, #24
     ; add
     ;lcall _SEND_DEZ_NUM
     mov DPL,R0
@@ -943,6 +973,9 @@ PUSH_LEFT_sub:
     mov DPL,A
     mov DPH, #0
     movx A, @DPTR ; number beside
+    jz BYPASS_LEFT 
+    mov 25h, #24
+BYPASS_LEFT:
     mov R2, A
     mov A, #0
     movx @DPTR, A ; clear
@@ -1006,6 +1039,7 @@ MOVE_LEFT_sub:
     subb A, R2
     jnz MOVE_LEFT_sub_exit
     
+    mov 25h, #24
     mov A, #0
     movx @DPTR, A
     mov A, DPL
@@ -1070,6 +1104,9 @@ PUSH_RIGHT_sub:
     mov DPL,A
     mov DPH, #0
     movx A, @DPTR ; number beside
+    jz BYPASS_RIGHT
+    mov 25h, #24
+BYPASS_RIGHT:
     mov R2, A
     mov A, #0
     movx @DPTR, A ; clear
@@ -1133,6 +1170,7 @@ MOVE_RIGHT_sub:
     subb A, R2
     jnz MOVE_RIGHT_sub_exit
     
+    mov 25h, #24
     mov A, #0
     movx @DPTR, A
     mov A, DPL
@@ -1226,6 +1264,11 @@ DETECT_ARROW:
     jnz NOT_DOWN
     
     lcall MOVE_DOWN
+    mov A, 25h
+    push ACC
+    lcall _SEND_DEZ_NUM
+    pop ACC
+    jz NOT_RIGHT
     lcall GEN_RAND
     pop ACC
     lcall DISPLAY 
@@ -1238,6 +1281,11 @@ NOT_DOWN:
     jnz NOT_UP
 
     lcall MOVE_UP
+    mov A, 25h
+    push ACC
+    lcall _SEND_DEZ_NUM
+    pop ACC
+    jz NOT_RIGHT
     lcall GEN_RAND
     pop ACC
     lcall DISPLAY 
@@ -1250,6 +1298,11 @@ NOT_UP:
     jnz NOT_LEFT
 
     lcall MOVE_LEFT
+    mov A, 25h
+    push ACC
+    lcall _SEND_DEZ_NUM
+    pop ACC
+    jz NOT_RIGHT
     lcall GEN_RAND
     pop ACC
     lcall DISPLAY 
@@ -1262,6 +1315,11 @@ NOT_LEFT:
     jnz NOT_RIGHT
 
     lcall MOVE_RIGHT
+    mov A, 25h
+    push ACC
+    lcall _SEND_DEZ_NUM
+    pop ACC
+    jz NOT_RIGHT
     lcall GEN_RAND
     pop ACC
     lcall DISPLAY 
@@ -1577,7 +1635,7 @@ newLine:
 	.DB 00H
 
 Dot:
-	.DB "\t."
+	.DB "\t   ."
 	.DB 00H
 
 Tab:
